@@ -57,9 +57,35 @@ Thumbs.db
 # Environment and secrets
 .env
 .env.local
+.env.*
+!.env.example
+.envrc
+.envrc.local
+.secrets/
+secrets/
+credentials/
+*.credentials
+*credentials.json
+*service-account*.json
+cookies.dat
+cookies*.json
+*.cookies
+*.har
+*.log
+*.p8
+*.pfx
+*.mobileprovision
+*.provisionprofile
 *.pem
 *.p12
 *.key
+
+# Local-only scratch, captures, and packaged builds
+.local/
+local/
+scratch/
+*.dmg
+*.app/
 
 TEMP_*
 .tmp/

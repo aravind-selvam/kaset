@@ -13,6 +13,7 @@ source "$ROOT/version.env"
 CONF=${1:-release}
 SIGNING_MODE=${KASET_SIGNING:-dev}
 SKIP_MAIN_ASSETS=${KASET_SKIP_MAIN_ASSETS:-0}
+PERSONAL_BUILD=${KASET_PERSONAL_BUILD:-0}
 APP_NAME="Kaset"
 RELEASE_BUNDLE_ID="com.sertacozercan.Kaset"
 # Debug bundles get their own sandbox container, so they never share the release
@@ -21,6 +22,13 @@ if [[ "$(printf '%s' "$CONF" | tr '[:upper:]' '[:lower:]')" == "debug" ]]; then
   BUNDLE_ID="${RELEASE_BUNDLE_ID}.debug"
 else
   BUNDLE_ID="$RELEASE_BUNDLE_ID"
+fi
+if [[ "$PERSONAL_BUILD" == "1" ]]; then
+  if [[ "$CONF" != "debug" ]]; then
+    echo "ERROR: Personal builds must use the debug configuration for isolated session storage." >&2
+    exit 1
+  fi
+  BUNDLE_ID="com.aravindselvam.kaset.personal.debug"
 fi
 DEVELOPMENT_LOCALIZATION="en"
 MIN_MACOS_VERSION="15.4"
@@ -675,6 +683,17 @@ ${APP_LOCALIZATIONS_PLIST}
 </dict>
 </plist>
 PLIST
+
+if [[ "$PERSONAL_BUILD" == "1" ]]; then
+  PLIST_BUDDY=/usr/libexec/PlistBuddy
+  "$PLIST_BUDDY" -c 'Set :CFBundleName Kaset Personal' "$APP_BUNDLE/Contents/Info.plist"
+  "$PLIST_BUDDY" -c 'Set :CFBundleDisplayName Kaset Personal' "$APP_BUNDLE/Contents/Info.plist"
+  "$PLIST_BUDDY" -c 'Delete :CFBundleURLTypes' "$APP_BUNDLE/Contents/Info.plist"
+  "$PLIST_BUDDY" -c 'Delete :SUFeedURL' "$APP_BUNDLE/Contents/Info.plist"
+  "$PLIST_BUDDY" -c 'Set :SUEnableAutomaticChecks false' "$APP_BUNDLE/Contents/Info.plist"
+  "$PLIST_BUDDY" -c 'Set :SUAllowsAutomaticUpdates false' "$APP_BUNDLE/Contents/Info.plist"
+  "$PLIST_BUDDY" -c 'Add :KasetPersonalBuild bool true' "$APP_BUNDLE/Contents/Info.plist"
+fi
 
 # ── Strip extended attributes ─────────────────────────────────────────────────
 
