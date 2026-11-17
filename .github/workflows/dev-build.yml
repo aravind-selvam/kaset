@@ -36,8 +36,14 @@ jobs:
           test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$PLIST")" = 'com.aravindselvam.kaset.personal.debug'
           test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$PLIST")" = 'Kaset Personal'
           test "$(/usr/libexec/PlistBuddy -c 'Print :KasetPersonalBuild' "$PLIST")" = 'true'
-          ! /usr/libexec/PlistBuddy -c 'Print :SUFeedURL' "$PLIST" 2>/dev/null
-          ! /usr/libexec/PlistBuddy -c 'Print :CFBundleURLTypes' "$PLIST" 2>/dev/null
+          if /usr/libexec/PlistBuddy -c 'Print :SUFeedURL' "$PLIST" >/dev/null 2>&1; then
+            echo 'Personal build must not include the official update feed.' >&2
+            exit 1
+          fi
+          if /usr/libexec/PlistBuddy -c 'Print :CFBundleURLTypes' "$PLIST" >/dev/null 2>&1; then
+            echo 'Personal build must not register the official URL scheme.' >&2
+            exit 1
+          fi
           codesign --verify --deep --strict "$APP"
           mkdir -p personal-artifact
           ditto "$APP" 'personal-artifact/Kaset Personal.app'
