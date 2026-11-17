@@ -271,7 +271,7 @@ final class NowPlayingManager {
                 center.playbackState = .playing
                 return .stateOnly
             case .claim:
-                guard self.isNativeClaim(center.nowPlayingInfo) else { return .none }
+                guard Self.isNativeClaim(center.nowPlayingInfo) else { return .none }
                 // Keep the existing fallback, marked as playing, without publishing a new one.
                 center.playbackState = .playing
                 return .claim
@@ -279,7 +279,7 @@ final class NowPlayingManager {
         case let .stateOnly(playbackState):
             // WebKit publishes its card as a separate Now Playing entry rather than replacing the
             // app's metadata, so metadata of ours would show up as a second Kaset entry (#457).
-            if self.isNativeClaim(center.nowPlayingInfo) {
+            if Self.isNativeClaim(center.nowPlayingInfo) {
                 center.nowPlayingInfo = nil
             }
             center.playbackState = playbackState.mediaPlayerPlaybackState
@@ -292,7 +292,7 @@ final class NowPlayingManager {
                 center.playbackState = .stopped
                 return .none
             case .claim:
-                guard self.isNativeClaim(center.nowPlayingInfo) else { return .none }
+                guard Self.isNativeClaim(center.nowPlayingInfo) else { return .none }
                 center.playbackState = .stopped
                 center.nowPlayingInfo = nil
                 return .none

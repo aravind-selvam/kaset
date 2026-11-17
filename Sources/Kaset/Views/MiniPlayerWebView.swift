@@ -1419,7 +1419,7 @@ extension SingletonPlayerWebView {
         messageType: String
     ) -> Bool {
         // The coordinator fences media keys by committed generation and command time.
-        self.remoteTransportCommand(forMessageType: messageType) != nil
+        Self.remoteTransportCommand(forMessageType: messageType) != nil
             || documentID == nil || documentID == expectedDocumentID
     }
 
